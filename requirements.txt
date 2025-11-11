@@ -5,6 +5,7 @@ django
 django-jazzmin
 django-widget-tweaks
 pillow
+razorpay
 
 
 
