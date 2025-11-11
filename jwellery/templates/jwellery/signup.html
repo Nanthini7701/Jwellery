@@ -1,0 +1,152 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<style>
+  body {
+    background: url("{% static 'images/loginbr.jpeg' %}") no-repeat center center/cover;
+    font-family: "Poppins", sans-serif;
+    position: relative;
+  }
+
+  body::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(3px);
+    z-index: 0;
+  }
+
+  .signup-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #f3e5ab;
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.25);
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .signup-card::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.15), transparent 60%);
+    animation: shimmer 5s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .signup-title {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, #d4af37, #b8860b);
+   
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+  }
+
+  .form-label {
+    color: #7a6229;
+    font-weight: 600;
+  }
+
+  .form-control {
+    border-radius: 12px;
+    border: 1px solid #e0c97f;
+    padding: 10px 12px;
+    background-color: #fffdf5;
+  }
+
+  .form-control:focus {
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    border-color: #d4af37;
+  }
+
+  .btn-signup {
+    background: linear-gradient(90deg, #d4af37, #b8860b);
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-signup:hover {
+    background: linear-gradient(90deg, #b8860b, #d4af37);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .login-link a {
+    color: #b8860b;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .login-link a:hover {
+    text-decoration: underline;
+  }
+
+  .jewel-icon {
+    font-size: 3rem;
+    color: #d4af37;
+    text-align: center;
+    display: block;
+    margin-bottom: 10px;
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 5px #d4af37, 0 0 10px #fff5b7; }
+    to { text-shadow: 0 0 20px #b8860b, 0 0 30px #fff5b7; }
+  }
+</style>
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; position: relative; z-index: 1;">
+  <div class="card signup-card p-5 shadow-lg" style="max-width: 480px; width: 100%;">
+    <i class="bi bi-gem jewel-icon"></i>
+    <h2 class="signup-title mb-3">Join the Royal Collection</h2>
+    <p class="text-center text-muted mb-4">Create your account and step into the world of timeless beauty ✨</p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field|add_class:"form-control" }}
+          {% if field.errors %}
+            <div class="text-danger small mt-1">{{ field.errors|striptags }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <div class="d-grid">
+        <button type="submit" class="btn btn-signup py-2">
+          <i class="bi bi-person-plus-fill me-2"></i> Create Account
+        </button>
+      </div>
+    </form>
+
+    <div class="login-link">
+      <p class="mt-3">Already have an account? 
+        <a href="{% url 'jwellery:login' %}">Login here</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

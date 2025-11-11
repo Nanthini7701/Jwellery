@@ -1,0 +1,96 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .category-container {
+    padding: 60px 8%;
+    background-color: #fff8e7;
+    color: #4a3f28;
+    min-height: 80vh;
+  }
+
+  .category-title {
+    text-align: center;
+    font-family: "Playfair Display", serif;
+    font-size: 2.3rem;
+    color: #9e411c;
+    margin-bottom: 40px;
+    font-weight: 700;
+  }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+  }
+
+  .product-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    text-align: center;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-bottom: 3px solid #f1c27d;
+  }
+
+  .product-card h5 {
+    font-family: "Playfair Display", serif;
+    font-size: 1.3rem;
+    margin-top: 10px;
+    color: #6b4e17;
+  }
+
+  .product-card p {
+    color: #9e411c;
+    font-weight: 600;
+    margin: 8px 0;
+  }
+
+  .product-card a {
+    display: inline-block;
+    background-color: #d4af37;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    margin-bottom: 15px;
+  }
+
+  .product-card a:hover {
+    background-color: #b9972b;
+  }
+</style>
+
+<div class="category-container">
+  <h2 class="category-title">{{ category.name }}</h2>
+
+  {% if products %}
+    <div class="product-grid">
+      {% for product in products %}
+      <div class="product-card">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        <h5>{{ product.name }}</h5>
+        <p>₹{{ product.price }}</p>
+        <a href="{% url 'jwellery:add_to_cart' product.id %}">Add to Cart</a>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="text-align:center;">No products found in this category.</p>
+  {% endif %}
+</div>
+{% endblock %}

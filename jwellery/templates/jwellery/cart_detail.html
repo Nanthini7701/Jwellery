@@ -1,0 +1,164 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* Elegant Jewellery Style */
+  body {
+    background-color: #fffaf3;
+  }
+
+  .cart-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  h2.cart-title {
+    font-family: "Playfair Display", serif;
+    color: #d4af37;
+    font-weight: 700;
+    margin-bottom: 25px;
+  }
+
+  table {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+
+  thead {
+    background: linear-gradient(to right, #f7e8b3, #f5d67c);
+    color: #4b3500;
+    font-weight: 600;
+  }
+
+  tbody tr:hover {
+    background: #fff7df;
+    transition: 0.3s;
+  }
+
+  .btn-remove {
+    background: #ff6b6b;
+    border: none;
+    border-radius: 50px;
+    padding: 6px 15px;
+    color: white;
+    transition: 0.3s;
+  }
+
+  .btn-remove:hover {
+    background: #ff4040;
+  }
+
+  .total-box {
+    background: linear-gradient(135deg, #fbeec1, #f7d98e);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    color: #3a2c00;
+    display: inline-block;
+    animation: popIn 1s ease-in-out;
+  }
+
+  .checkout-btn {
+    background: linear-gradient(to right, #d4af37, #c89b2b);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 12px 30px;
+    transition: 0.3s;
+    margin-top: 15px;
+  }
+
+  .checkout-btn:hover {
+    background: linear-gradient(to right, #e6be4d, #d4af37);
+    transform: scale(1.05);
+  }
+
+  .empty-cart {
+    background: linear-gradient(to right, #fff4c3, #ffe4a3);
+    border-radius: 15px;
+    padding: 30px;
+    color: #8b6d00;
+    font-weight: 500;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  @keyframes popIn {
+    from {opacity: 0; transform: scale(0.9);}
+    to {opacity: 1; transform: scale(1);}
+  }
+</style>
+
+<div class="container my-5">
+  <div class="cart-container mx-auto">
+    <h2 class="cart-title text-center">
+      <i class="bi bi-bag-heart-fill me-2"></i>Your Jewellery Cart
+    </h2>
+
+    {% if cart|length > 0 %}
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center shadow-sm">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                  <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}" width="70" class="rounded shadow-sm">
+                  <span class="fw-semibold">{{ item.product.title }}</span>
+                </div>
+              </td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ item.price|floatformat:2 }}</td>
+              <td><strong>₹{{ item.total_price|floatformat:2 }}</strong></td>
+              <td>
+                <a href="{% url 'jwellery:cart_remove' item.product.id %}" class="btn-remove">
+                  <i class="bi bi-x-circle"></i> Remove
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-4">
+        <div class="total-box">
+          <h5>
+            <i class="bi bi-currency-rupee"></i>
+            <strong>Total:</strong> ₹{{ cart.get_total_price|floatformat:2 }}
+          </h5>
+        </div><br>
+        <a href="{% url 'jwellery:checkout' %}" class="checkout-btn">
+          <i class="bi bi-gem me-2"></i>Proceed to Checkout
+        </a>
+      </div>
+
+    {% else %}
+      <div class="empty-cart text-center">
+        <i class="bi bi-emoji-frown fs-2"></i>
+        <p class="mt-3">Your cart is empty. Add some sparkling pieces to your collection!</p>
+        <a href="{% url 'jwellery:home' %}" class="checkout-btn">
+          <i class="bi bi-arrow-left"></i> Back to Shop
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

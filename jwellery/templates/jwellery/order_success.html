@@ -1,0 +1,210 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+  body {
+    background: radial-gradient(circle at top, #fffaf0 0%, #f9e6c0 100%);
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+  }
+
+  .success-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    text-align: center;
+    background: url("{% static 'images/ordersuc.jpeg' %}") no-repeat center center/cover;
+    position: relative;
+  }
+
+  .success-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 1;
+  }
+
+  .success-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    border: 2px solid #d4af37;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .checkmark {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 4px solid #d4af37;
+    position: relative;
+    animation: popIn 0.6s ease forwards;
+  }
+
+  .checkmark::after {
+    content: "";
+    position: absolute;
+    left: 28px;
+    top: 52px;
+    width: 25px;
+    height: 50px;
+    border-right: 4px solid #b88a1e;
+    border-bottom: 4px solid #b88a1e;
+    transform: rotate(45deg);
+    opacity: 0;
+    animation: checkmark 0.5s ease 0.6s forwards;
+  }
+
+  .success-title {
+    font-family: 'Playfair Display', serif;
+    color: #b88a1e;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+
+  .success-text {
+    color: #5e4b1f;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+  }
+
+  .order-details {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #d4af37;
+    border-radius: 10px;
+    padding: 15px;
+    color: #6a5200;
+    box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+
+  .btn-home {
+    display: inline-block;
+    background: linear-gradient(135deg, #d4af37, #b88a1e);
+    color: #fff;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-home:hover {
+    background: linear-gradient(135deg, #f1cb58, #d4af37);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+    transform: scale(1.05);
+  }
+
+  /* Sparkle Animation */
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: gold;
+    border-radius: 50%;
+    box-shadow: 0 0 10px gold, 0 0 20px #fce88b;
+    opacity: 0.9;
+    animation: sparkleMove 7s linear infinite;
+  }
+
+  @keyframes sparkleMove {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50% { transform: translateY(-60px) scale(1.5); opacity: 0.6; }
+    100% { transform: translateY(-120px) scale(0.8); opacity: 0; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes checkmark {
+    to { opacity: 1; }
+  }
+
+  /* Thank You Message */
+  .thank-you {
+    position: relative;
+    z-index: 2;
+    margin-top: 30px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #b88a1e;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: revealText 1.5s ease forwards;
+    animation-delay: 3s;
+    text-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+  }
+
+  @keyframes revealText {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="success-wrapper">
+  <!-- Sparkles floating -->
+  {% for i in "1234567890123456789012" %}
+   
+  {% endfor %}
+
+  <div class="success-card text-center">
+    <div class="checkmark"></div>
+    <h2 class="success-title">Order Placed Successfully!</h2>
+    <p class="success-text">Thank you for choosing <strong>JewelAura</strong>.  
+      Your exquisite jewellery will soon be on its way to you!</p>
+
+    <div class="order-details">
+      <p><strong>Order ID:</strong> {{ order.id }}</p>
+      <p><strong>Total Amount:</strong> ₹{{ order.get_total_cost }}</p>
+    </div>
+
+    <a href="{% url 'jwellery:home' %}" class="btn-home mt-3"><i class="bi bi-gem me-2"></i>Back to Home</a>
+  </div>
+
+  <!-- Delayed golden thank-you message -->
+  <div class="thank-you">
+    ✨ Thank you for shopping with <strong>JewelAura</strong>!  
+    <br>Continue exploring our exclusive gold & diamond collections.
+  </div>
+</div>
+
+<script>
+  // Create floating sparkles dynamically
+  document.addEventListener("DOMContentLoaded", () => {
+    const wrapper = document.querySelector(".success-wrapper");
+    for (let i = 0; i < 25; i++) {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      sparkle.style.left = Math.random() * 100 + "%";
+      sparkle.style.top = Math.random() * 100 + "%";
+      sparkle.style.animationDuration = (6 + Math.random() * 4) + "s";
+      sparkle.style.animationDelay = (Math.random() * 5) + "s";
+      wrapper.appendChild(sparkle);
+    }
+  });
+</script>
+
+{% endblock %}

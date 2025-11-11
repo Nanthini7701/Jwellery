@@ -1,0 +1,349 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+{% block content %}
+<style>
+  /* Elegant luxury checkout/payment theme */
+  body { background-color: #fffaf3; }
+  .checkout-container { background:#fff; border-radius:20px; padding:32px; box-shadow:0 5px 25px rgba(0,0,0,0.12); }
+  .checkout-title { font-family:"Playfair Display",serif; font-size:2.0rem; color:#d4af37; font-weight:700; }
+  .checkout-subtitle { color:#6b5b00; margin-bottom:18px; }
+  .form-control { border-radius:10px; border:1px solid #f2d16b; padding:10px 12px; box-shadow: inset 0 0 4px rgba(212,175,55,0.12); }
+  .form-row { gap:12px; display:flex; flex-wrap:wrap; }
+  .col { flex:1 1 200px; min-width:180px; }
+  .btn-gold {
+    background: linear-gradient(90deg,#d4af37,#c89b2b); color:#fff; border:none; border-radius:50px; padding:11px 20px; font-weight:600;
+  }
+  .btn-gold:disabled { opacity:0.6; transform:none; cursor:not-allowed; }
+  .payment-methods { display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+  .pm-btn { padding:10px 14px; border-radius:12px; border:1px solid #f0e0a0; background:#fff; cursor:pointer; }
+  .pm-btn.active { box-shadow:0 6px 18px rgba(212,175,55,0.16); transform:translateY(-2px); }
+  .checkout-img { width:100%; border-radius:12px; box-shadow:0 6px 25px rgba(212,175,55,0.18); }
+  .small { font-size:0.9rem; color:#6b5b00; }
+  .payment-panel { border-radius:12px; padding:16px; border:1px dashed rgba(212,175,55,0.12); background:linear-gradient(180deg, rgba(255,250,240,0.6), #fff); }
+  .success-popup { display:none; position:fixed; inset:0; background:rgba(255,255,255,0.95); z-index:999; justify-content:center; align-items:center; flex-direction:column; text-align:center; padding:20px; }
+  .success-popup.active { display:flex; }
+  .checkmark { width:120px; height:120px; border-radius:50%; display:block; stroke-width:4; stroke:#d4af37; box-shadow:0 0 30px rgba(212,175,55,0.35); margin-bottom:18px; }
+  .error { color:#b00020; font-size:0.85rem; margin-top:6px; }
+  @media (max-width: 768px) {
+    .checkout-container { padding:20px; }
+    .form-row { flex-direction:column; }
+  }
+</style>
+
+<div class="container my-5">
+  <div class="row justify-content-center g-4">
+    <!-- Left: Form & Payment -->
+    <div class="col-lg-7">
+      <div class="checkout-container">
+        <h2 class="checkout-title text-center mb-2">
+          <i class="bi bi-wallet2 me-2"></i>Secure Payment
+        </h2>
+        <p class="checkout-subtitle text-center">Complete payment to confirm your order</p>
+
+        <!-- Billing / Order Form (keeps your existing Django form) -->
+        <form id="paymentForm" method="post" novalidate>
+          {% csrf_token %}
+          <div class="mb-3">
+            <h5 class="small">Billing & Shipping</h5>
+            <!-- keep your existing billing form fields; you can split or customize server-side -->
+            {{ form.as_p }}
+          </div>
+
+          <!-- Payment options -->
+          <div class="mb-3">
+            <h5 class="small">Payment Method</h5>
+            <div class="payment-methods" role="tablist" aria-label="Payment methods">
+              <button type="button" class="pm-btn active" data-method="card" id="pm-card" aria-selected="true">Card</button>
+              <button type="button" class="pm-btn" data-method="upi" id="pm-upi">UPI</button>
+              <button type="button" class="pm-btn" data-method="netbanking" id="pm-net">Netbanking</button>
+              <button type="button" class="pm-btn" data-method="wallet" id="pm-wallet">Wallet</button>
+            </div>
+          </div>
+
+          <!-- Payment panels -->
+          <div id="panels">
+            <!-- Card Panel -->
+            <div class="payment-panel" data-panel="card">
+              <div class="mb-2 small">Pay with debit / credit card</div>
+              <div class="form-row">
+                <div class="col">
+                  <label for="cardName" class="form-label">Cardholder Name</label>
+                  <input id="cardName" name="cardName" class="form-control" type="text" placeholder="Name on card" autocomplete="cc-name" required>
+                </div>
+                <div class="col">
+                  <label for="cardNumber" class="form-label">Card Number</label>
+                  <input id="cardNumber" name="cardNumber" class="form-control" type="text" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" autocomplete="cc-number" required>
+                </div>
+              </div>
+
+              <div class="form-row mt-3">
+                <div style="flex:0 0 150px;">
+                  <label for="cardExp" class="form-label">Expiry (MM/YY)</label>
+                  <input id="cardExp" name="cardExp" class="form-control" type="text" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" required>
+                </div>
+                <div style="flex:0 0 110px;">
+                  <label for="cardCvv" class="form-label">CVV</label>
+                  <input id="cardCvv" name="cardCvv" class="form-control" type="password" inputmode="numeric" maxlength="4" placeholder="123" autocomplete="cc-csc" required>
+                </div>
+                <div style="flex:1 1 auto;">
+                  <label for="cardEmail" class="form-label">Email (receipt)</label>
+                  <input id="cardEmail" name="cardEmail" class="form-control" type="email" placeholder="you@example.com" required>
+                </div>
+              </div>
+              <div id="cardError" class="error" role="alert" aria-live="assertive" style="display:none"></div>
+            </div>
+
+            <!-- UPI Panel -->
+            <div class="payment-panel" data-panel="upi" style="display:none">
+              <div class="mb-2 small">Pay using UPI (e.g., Google Pay, PhonePe)</div>
+              <label for="upiId" class="form-label">UPI ID</label>
+              <div class="form-row">
+                <input id="upiId" name="upiId" class="form-control" placeholder="example@okaxis" style="flex:1" autocomplete="off">
+                <button type="button" id="upiPayBtn" class="btn-gold ms-2" style="flex:0 0 auto">Request</button>
+              </div>
+              <div class="small mt-2">After clicking Request, follow your UPI app to complete payment. (Server-side verify transaction ID.)</div>
+              <div id="upiError" class="error" style="display:none"></div>
+            </div>
+
+            <!-- Netbanking Panel -->
+            <div class="payment-panel" data-panel="netbanking" style="display:none">
+              <div class="mb-2 small">Netbanking / IMPS / NEFT</div>
+              <label for="bankSelect" class="form-label">Choose bank</label>
+              <select id="bankSelect" name="bankSelect" class="form-control" required>
+                <option value="">Select your bank</option>
+                <option>State Bank of India</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Punjab National Bank</option>
+              </select>
+              <div class="small mt-2">You will be redirected to your bank/payment gateway for authentication.</div>
+            </div>
+
+            <!-- Wallet Panel (placeholder) -->
+            <div class="payment-panel" data-panel="wallet" style="display:none">
+              <div class="mb-2 small">Pay using mobile wallet</div>
+              <p class="small">Select wallet provider at gateway stage (Razorpay/Paytm/PhonePe) — integration point for server-side SDK.</p>
+            </div>
+          </div>
+
+          <!-- Summary / Place payment -->
+          <div class="mt-4 d-flex align-items-center justify-content-between flex-wrap">
+            <div class="small text-muted">
+              <i class="bi bi-lock-fill"></i> 100% Secure & Encrypted. We do not store full card details on our servers.
+            </div>
+            <div style="min-width:220px;">
+              <button id="payNow" type="submit" class="btn-gold w-100">
+                <i class="bi bi-gem me-2"></i>Pay Now
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- place for server error messages -->
+        <div id="serverMessage" class="error mt-3" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Right: Order summary / image -->
+    <div class="col-lg-4">
+      <div class="text-center">
+        <img src="{% static 'images/gold.jpeg' %}" alt="Jewellery" class="checkout-img mb-3">
+        <div class="p-3 payment-panel">
+          <h6 class="mb-2">Order Summary</h6>
+          <!-- You can replace these with dynamic values from Django context -->
+          <div class="d-flex justify-content-between small"><span>Items</span><strong>₹ {{ order_total_items|default:"0.00" }}</strong></div>
+          <div class="d-flex justify-content-between small"><span>Shipping</span><span class="text-muted">Calculated at checkout</span></div>
+          <hr>
+          <div class="d-flex justify-content-between"><strong>Total</strong><strong>₹ {{ order_total|default:"0.00" }}</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Animation Popup -->
+<div class="success-popup" id="successPopup" aria-hidden="true">
+  <svg class="checkmark" viewBox="0 0 52 52" role="img" aria-label="success">
+    <path fill="none" d="M14 27l7 7 16-16"/>
+  </svg>
+  <h3 style="color:#b8912f; font-family:'Playfair Display', serif;">Payment Successful</h3>
+  <p style="color:#6b5b00">Your order is confirmed — thank you for shopping with us ✨</p>
+  <a href="{% url 'jwellery:home' %}" class="btn-gold mt-3"><i class="bi bi-arrow-left"></i> Back to Shop</a>
+</div>
+
+<script>
+  // --- UI: toggle payment method panels ---
+  const pmButtons = document.querySelectorAll('.pm-btn');
+  const panels = document.querySelectorAll('[data-panel]');
+  pmButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      pmButtons.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      btn.classList.add('active'); btn.setAttribute('aria-selected','true');
+      const method = btn.dataset.method;
+      panels.forEach(p => { p.style.display = (p.dataset.panel === method) ? 'block' : 'none'; });
+    });
+  });
+
+  // --- Basic client-side validation helpers ---
+  function luhnCheck(num) {
+    // Remove non-digits
+    const s = num.replace(/\D/g,'');
+    let sum = 0, alt = false;
+    for (let i = s.length - 1; i >= 0; i--) {
+      let n = parseInt(s.charAt(i),10);
+      if (alt) { n *= 2; if (n > 9) n -= 9; }
+      sum += n; alt = !alt;
+    }
+    return (sum % 10 === 0);
+  }
+
+  function validExpiry(val) {
+    if (!/^\d{2}\/\d{2}$/.test(val)) return false;
+    const [m, y] = val.split('/').map(v=>parseInt(v,10));
+    if (m < 1 || m > 12) return false;
+    const now = new Date();
+    const currY = now.getFullYear() % 100;
+    const currM = now.getMonth() + 1;
+    if (y < currY) return false;
+    if (y === currY && m < currM) return false;
+    return true;
+  }
+
+  // --- Handle form submit: validate and simulate payment ---
+  const form = document.getElementById('paymentForm');
+  const popup = document.getElementById('successPopup');
+  const payNow = document.getElementById('payNow');
+  const serverMessage = document.getElementById('serverMessage');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    serverMessage.style.display = 'none';
+    payNow.disabled = true;
+    payNow.textContent = 'Processing...';
+
+    // determine active method
+    const activeMethod = document.querySelector('.pm-btn.active').dataset.method;
+
+    // perform client-side validation per method
+    if (activeMethod === 'card') {
+      const cardNum = document.getElementById('cardNumber').value.trim();
+      const cardName = document.getElementById('cardName').value.trim();
+      const cardExp = document.getElementById('cardExp').value.trim();
+      const cardCvv = document.getElementById('cardCvv').value.trim();
+      const email = document.getElementById('cardEmail').value.trim();
+      const cardError = document.getElementById('cardError');
+
+      cardError.style.display = 'none';
+      if (!cardName || !cardNum || !cardExp || !cardCvv || !email) {
+        cardError.textContent = 'Please fill all card fields.';
+        cardError.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+      if (!/^\d{12,19}$/.test(cardNum.replace(/\s/g,'')) || !luhnCheck(cardNum)) {
+        cardError.textContent = 'Invalid card number.';
+        cardError.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+      if (!validExpiry(cardExp)) {
+        cardError.textContent = 'Invalid or expired card expiry.';
+        cardError.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+      if (!/^\d{3,4}$/.test(cardCvv)) {
+        cardError.textContent = 'Invalid CVV.';
+        cardError.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+
+      // --- TODO: Here you should send card data securely to your server or payment gateway SDK ---
+      // Example: send tokenization request to your backend which uses Stripe / Razorpay / PayU
+      // Use fetch() to POST to a server endpoint (never store raw card numbers in your DB).
+      // We'll simulate a successful payment below.
+
+    } else if (activeMethod === 'upi') {
+      const upi = document.getElementById('upiId').value.trim();
+      const upiError = document.getElementById('upiError');
+      upiError.style.display = 'none';
+      if (!upi || !/^[\w.\-]{2,}@[a-zA-Z]{3,}$/.test(upi)) {
+        upiError.textContent = 'Please enter a valid UPI ID (example@bank).';
+        upiError.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+      // TODO: send UPI payment request to server and verify txn ID webhook.
+    } else if (activeMethod === 'netbanking') {
+      const bank = document.getElementById('bankSelect').value;
+      if (!bank) {
+        serverMessage.textContent = 'Please select a bank for netbanking.';
+        serverMessage.style.display = 'block';
+        payNow.disabled = false; payNow.textContent = 'Pay Now';
+        return;
+      }
+      // TODO: redirect to gateway/netbanking flow
+    } else {
+      // wallet - simulate
+    }
+
+    // Simulate network/payment latency (replace with real server call)
+    try {
+      await new Promise(res => setTimeout(res, 1200));
+
+      // If you were using fetch to your payment endpoint, handle response here:
+      // const resp = await fetch('/payments/charge/', { method:'POST', body: formData, headers:{'X-CSRFToken': '{{ csrf_token }}' } });
+      // const data = await resp.json();
+      // if (!data.success) throw new Error(data.message || 'Payment failed');
+
+      // Show success popup
+      popup.classList.add('active');
+      popup.setAttribute('aria-hidden','false');
+
+      // OPTIONAL: you may POST the server response or payment txn id to finalize order.
+      // Example:
+      // await fetch('/orders/confirm/', { method:'POST', headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'}, body: JSON.stringify({ order_id: ..., txn_id: ... }) });
+
+      // redirect after short delay
+      setTimeout(() => {
+        window.location.href = "{% url 'jwellery:home' %}";
+      }, 3500);
+
+    } catch (err) {
+      serverMessage.textContent = err.message || 'Payment error. Please try again.';
+      serverMessage.style.display = 'block';
+      payNow.disabled = false; payNow.textContent = 'Pay Now';
+    }
+  });
+
+  // small auto-format for card number (groups of 4)
+  document.getElementById('cardNumber').addEventListener('input', function(e){
+    let v = this.value.replace(/\D/g,'').slice(0,19);
+    const groups = v.match(/.{1,4}/g);
+    this.value = groups ? groups.join(' ') : v;
+  });
+
+  // auto-format expiry
+  document.getElementById('cardExp').addEventListener('input', function(e){
+    let v = this.value.replace(/\D/g,'').slice(0,4);
+    if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+    this.value = v;
+  });
+
+  // UPI "Request" quick action (simulate)
+  document.getElementById('upiPayBtn').addEventListener('click', function(){
+    const upi = document.getElementById('upiId').value.trim();
+    const upiError = document.getElementById('upiError');
+    upiError.style.display = 'none';
+    if (!upi) {
+      upiError.textContent = 'Enter UPI ID to request payment.';
+      upiError.style.display = 'block';
+      return;
+    }
+    // In production: make server call to generate UPI QR or collect payment using UPI Intent
+    alert('UPI payment request sent. Confirm on your UPI app. (This is a simulation.)');
+  });
+</script>
+{% endblock %}

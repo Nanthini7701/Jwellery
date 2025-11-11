@@ -1,0 +1,188 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+
+<style>
+  /* Background & layout */
+  body {
+    background: radial-gradient(circle at top, #fff8e7 0%, #f9e6c0 100%);
+    overflow-x: hidden;
+  }
+
+  .login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url("{% static 'images/loginbr.jpeg' %}") no-repeat center center/cover;
+    position: relative;
+  }
+
+  /* Overlay with soft gold tone */
+  .login-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    z-index: 1;
+  }
+
+  /* Sparkle animation layer */
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: gold;
+    border-radius: 50%;
+    box-shadow: 0 0 10px gold, 0 0 20px #fce88b;
+    opacity: 0.8;
+    animation: sparkleMove 8s linear infinite;
+  }
+
+  @keyframes sparkleMove {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: translateY(-50px) scale(1.5);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateY(-100px) scale(0.8);
+      opacity: 0;
+    }
+  }
+
+  /* Card styling */
+  .login-card {
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #d4af37;
+    border-radius: 20px;
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.5);
+    padding: 40px 35px;
+    max-width: 420px;
+    width: 100%;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+
+  .login-title {
+    font-family: "Playfair Display", serif;
+    color: #b18b25;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #7a6017;
+  }
+
+  .form-control {
+    border: 1.5px solid #d4af37;
+    border-radius: 12px;
+    padding: 10px 14px;
+  }
+
+  .form-control:focus {
+    border-color: #b88a1e;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-login {
+    background: linear-gradient(135deg, #d4af37, #b88a1e);
+    border: none;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    border-radius: 50px;
+    padding: 10px 0;
+    transition: 0.3s;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-login:hover {
+    background: linear-gradient(135deg, #f1cb58, #d4af37);
+    transform: scale(1.05);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+  }
+
+  .signup-text {
+    text-align: center;
+    margin-top: 20px;
+    color: #5a4b00;
+  }
+
+  .signup-text a {
+    color: #b88a1e;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .signup-text a:hover {
+    text-decoration: underline;
+    color: #d4af37;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="login-wrapper">
+  <!-- Sparkles (floating gold dots) -->
+  {% for i in "12345678901234567890" %}
+    
+  {% endfor %}
+
+  <div class="login-card shadow-lg">
+    <h2 class="login-title"><i class="bi bi-gem me-2"></i>Welcome Back to JewelAura</h2>
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_username" class="form-label">Username</label>
+        {{ form.username|add_class:"form-control" }}
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label">Password</label>
+        {{ form.password|add_class:"form-control" }}
+      </div>
+      <button type="submit" class="btn btn-login w-100">Login</button>
+    </form>
+    <p class="signup-text">
+      Don't have an account?
+      <a href="{% url 'jwellery:signup' %}">Sign Up Here</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // Add random sparkles for glowing effect
+  document.addEventListener("DOMContentLoaded", () => {
+    const wrapper = document.querySelector(".login-wrapper");
+    for (let i = 0; i < 25; i++) {
+      const sparkle = document.createElement("div");
+      sparkle.classList.add("sparkle");
+      sparkle.style.left = Math.random() * 100 + "%";
+      sparkle.style.top = Math.random() * 100 + "%";
+      sparkle.style.animationDuration = (6 + Math.random() * 4) + "s";
+      sparkle.style.animationDelay = (Math.random() * 5) + "s";
+      wrapper.appendChild(sparkle);
+    }
+  });
+</script>
+
+{% endblock %}

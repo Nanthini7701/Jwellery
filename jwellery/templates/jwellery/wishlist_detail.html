@@ -1,0 +1,162 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  .wishlist-container {
+    padding: 60px 8%;
+    background-color: #fff8e7;
+    color: #4a3f28;
+    min-height: 80vh;
+  }
+
+  .wishlist-title {
+    font-family: "Playfair Display", serif;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #9e411c;
+    font-weight: 700;
+  }
+
+  .wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 30px;
+  }
+
+  .wishlist-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+  }
+
+  .wishlist-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .wishlist-card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-bottom: 3px solid #f1c27d;
+  }
+
+  .wishlist-info {
+    padding: 15px;
+    text-align: center;
+  }
+
+  .wishlist-info h5 {
+    font-family: "Playfair Display", serif;
+    font-size: 1.3rem;
+    color: #6b4e17;
+    margin-bottom: 8px;
+  }
+
+  .wishlist-info p {
+    color: #9e411c;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .wishlist-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .wishlist-buttons a {
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: 0.3s ease;
+  }
+
+  .btn-cart {
+    background-color: #d4af37;
+    color: white;
+  }
+
+  .btn-cart:hover {
+    background-color: #b9972b;
+  }
+
+  .btn-remove {
+    background-color: #9e411c;
+    color: #fff;
+  }
+
+  .btn-remove:hover {
+    background-color: #7a2f12;
+  }
+
+  /* Empty State */
+  .empty-wishlist {
+    text-align: center;
+    margin-top: 100px;
+  }
+
+  .empty-wishlist i {
+    font-size: 4rem;
+    color: #d4af37;
+    margin-bottom: 20px;
+  }
+
+  .empty-wishlist p {
+    font-size: 1.3rem;
+    color: #6b4e17;
+  }
+
+  .empty-wishlist a {
+    background-color: #d4af37;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    margin-top: 15px;
+    display: inline-block;
+    font-weight: 600;
+    transition: 0.3s ease;
+  }
+
+  .empty-wishlist a:hover {
+    background-color: #b9972b;
+  }
+</style>
+
+<div class="wishlist-container">
+  <h2 class="wishlist-title">Your Wishlist</h2>
+{% if wishlist_items %}
+    <div class="wishlist-grid">
+  {% for item in wishlist_items %}
+  <div class="wishlist-card">
+    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+    <div class="wishlist-info">
+      <h5>{{ item.product.name }}</h5>
+      <p>₹{{ item.product.price }}</p>
+      <div class="wishlist-buttons">
+        <a href="{% url 'jwellery:add_to_cart' item.product.id %}" class="btn-cart">
+          <i class="bi bi-cart-plus"></i> Add to Cart
+        </a>
+        <a href="{% url 'jwellery:remove_from_wishlist' item.product.id %}" class="btn-remove">
+          <i class="bi bi-x-circle"></i> Remove
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+  {% else %}
+    <div class="empty-wishlist">
+      <i class="bi bi-heartbreak"></i>
+      <p>Your wishlist is empty — start adding your favorite pieces!</p>
+      <a href="{% url 'jwellery:product_list' %}">Browse Products</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

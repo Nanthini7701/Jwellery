@@ -1,0 +1,321 @@
+{% extends "jwellery/base.html" %}
+{% load static %}
+{% load shop_extras %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(to bottom right, #fffaf0, #fef6e4);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #b88a1e;
+    text-align: center;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 3px rgba(212, 175, 55, 0.3);
+  }
+
+  .sticky-bar {
+    position: sticky;
+    top: 70px;
+    z-index: 1000;
+    background: rgba(255, 253, 247, 0.97);
+    backdrop-filter: blur(6px);
+    padding: 15px 10px;
+    box-shadow: 0 2px 10px rgba(212, 175, 55, 0.2);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .sticky-bar:hover {
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+  }
+
+  .filter-bar {
+    text-align: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-bar button {
+    background: transparent;
+    border: none;
+    color: #8b6b1f;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 10px;
+    padding-bottom: 5px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .filter-bar button::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, #d4af37, #b88a1e);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .filter-bar button:hover::after,
+  .filter-bar button.active::after {
+    width: 100%;
+  }
+
+  .filter-bar button:hover {
+    color: #c09523;
+    transform: scale(1.05);
+  }
+
+  .search-sort-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+
+  .search-input,
+  .sort-select {
+    border: 2px solid #d4af37;
+    border-radius: 25px;
+    padding: 8px 15px;
+    font-size: 1rem;
+    color: #6b5c1e;
+    background-color: #fffdf7;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+  .search-input {
+    width: 250px;
+  }
+
+  .search-input:focus,
+  .sort-select:hover {
+    border-color: #b88a1e;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+  }
+
+  .card {
+    border: none;
+    border-radius: 15px;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease both;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  }
+
+  .card-img-top {
+    height: 280px;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .card:hover .card-img-top {
+    transform: scale(1.08);
+  }
+
+  .card-body {
+    padding: 18px;
+    text-align: center;
+  }
+
+  .card-title {
+    font-weight: 600;
+    color: #8b6b1f;
+  }
+
+  .fw-bold {
+    color: #c09523;
+    font-size: 1.1rem;
+  }
+
+  .badge {
+    border-radius: 50px;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #d4af37, #b88a1e);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #b88a1e, #a67c00);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+  }
+
+  .btn-outline-gold {
+    border: 2px solid #d4af37;
+    color: #b88a1e;
+    font-weight: 600;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-gold:hover {
+    background: #d4af37;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
+<div class="container my-5">
+  <h2 class="mb-4">💎 Explore Our Exclusive Jewellery Collection 💎</h2>
+
+  <!-- 🔸 Sticky Filter/Search/Sort Bar -->
+  <div class="sticky-bar">
+    <div class="filter-bar mb-2">
+      <button class="active" data-filter="all">All</button>
+      {% for cat in categories %}
+        <button data-filter="{{ cat.slug }}">{{ cat.name }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="search-sort-bar">
+      <input type="text" id="search-input" class="search-input" placeholder="Search jewellery...">
+      <select id="sort-select" class="sort-select">
+        <option value="default">Sort By</option>
+        <option value="priceLowHigh">Price: Low → High</option>
+        <option value="priceHighLow">Price: High → Low</option>
+        <option value="nameAZ">Name: A → Z</option>
+        <option value="nameZA">Name: Z → A</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 🔸 Product Grid -->
+  <div class="row g-4 mt-4" id="product-container">
+    {% for product in products %}
+    <div class="col-md-4 col-sm-6 product-card"
+         data-category="{{ product.category.slug }}"
+         data-price="{{ product.price }}"
+         data-name="{{ product.title|lower }}">
+      <div class="card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+        {% else %}
+          <img src="{% static 'jwellery/gold.png' %}" class="card-img-top" alt="No Image">
+        {% endif %}
+
+        <div class="card-body">
+          <h5 class="card-title">{{ product.title }}</h5>
+          <p class="text-muted"><i class="bi bi-tag"></i> {{ product.category.name }}</p>
+          <p class="fw-bold">₹{{ product.price }}</p>
+
+          {% if product.stock > 0 %}
+            <span class="badge bg-success mb-2">In Stock</span>
+          {% else %}
+            <span class="badge bg-danger mb-2">Out of Stock</span>
+          {% endif %}
+
+          <div class="d-grid gap-2 mt-3">
+            <a href="{{ product.get_absolute_url }}" class="btn btn-outline-gold btn-sm">
+              <i class="bi bi-eye"></i> View Details
+            </a>
+            <a href="{% url 'jwellery:cart_add' product.id %}" class="btn btn-gold btn-sm">
+              <i class="bi bi-bag-heart"></i> Add to Cart
+            </a>
+
+            <!-- ❤️ Wishlist Button -->
+            {% if product.id|stringformat:"s" in wishlist %}
+              <a href="{% url 'jwellery:remove_from_wishlist' product.id %}" 
+                 class="btn btn-outline-gold btn-sm">
+                <i class="bi bi-heart-fill text-danger"></i> Remove from Wishlist
+              </a>
+            {% else %}
+              <a href="{% url 'jwellery:add_to_wishlist' product.id %}" 
+                 class="btn btn-outline-gold btn-sm">
+                <i class="bi bi-heart"></i> Add to Wishlist
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- 🔸 Filter + Search + Sort Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const buttons = document.querySelectorAll(".filter-bar button");
+    const products = Array.from(document.querySelectorAll(".product-card"));
+    const searchInput = document.getElementById("search-input");
+    const sortSelect = document.getElementById("sort-select");
+    const productContainer = document.getElementById("product-container");
+
+    // Category Filter
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        buttons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const filter = btn.getAttribute("data-filter");
+        products.forEach(product => {
+          product.style.display =
+            filter === "all" || product.dataset.category === filter
+              ? "block"
+              : "none";
+        });
+      });
+    });
+
+    // Search Filter
+    searchInput.addEventListener("keyup", () => {
+      const query = searchInput.value.toLowerCase();
+      products.forEach(product => {
+        const title = product.dataset.name;
+        product.style.display = title.includes(query) ? "block" : "none";
+      });
+    });
+
+    // Sort Function
+    sortSelect.addEventListener("change", () => {
+      let sorted = [...products];
+      const value = sortSelect.value;
+
+      if (value === "priceLowHigh") sorted.sort((a, b) => a.dataset.price - b.dataset.price);
+      else if (value === "priceHighLow") sorted.sort((a, b) => b.dataset.price - a.dataset.price);
+      else if (value === "nameAZ") sorted.sort((a, b) => a.dataset.name.localeCompare(b.dataset.name));
+      else if (value === "nameZA") sorted.sort((a, b) => b.dataset.name.localeCompare(a.dataset.name));
+
+      productContainer.innerHTML = "";
+      sorted.forEach(p => productContainer.appendChild(p));
+    });
+  });
+</script>
+{% endblock %}

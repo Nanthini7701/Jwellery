@@ -1,0 +1,264 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* --- Main About Section --- */
+  .about-section {
+    background: linear-gradient(135deg, #fff8f0, #fce8df);
+    padding: 60px 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #b8860b;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .about-section p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #444;
+    max-width: 750px;
+    margin: 0 auto 30px;
+  }
+
+  .about-image-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  .about-image {
+    width: 100%;
+    max-width: 700px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .about-image:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 30px rgba(184, 134, 11, 0.3);
+  }
+
+  /* --- Sparkle Animation --- */
+  .sparkle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle, #fff, #ffd700);
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkle 2s linear infinite;
+  }
+
+  @keyframes sparkle {
+    0% {
+      opacity: 0;
+      transform: scale(0.5) translateY(0);
+    }
+    25% {
+      opacity: 1;
+      transform: scale(1.3);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.5) translateY(-10px);
+    }
+  }
+
+  /* --- Highlights --- */
+  .highlights {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+  }
+
+  .highlight-card {
+    background: #fff;
+    border-radius: 15px;
+    padding: 25px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+
+  .highlight-card:hover {
+    transform: translateY(-8px);
+  }
+
+  .highlight-card i {
+    font-size: 2rem;
+    color: #b8860b;
+    margin-bottom: 10px;
+  }
+
+  .highlight-card h5 {
+    font-size: 1.2rem;
+    color: #222;
+    margin-bottom: 8px;
+  }
+
+  /* --- Meet Our Artisans --- */
+  .team-section {
+    margin-top: 80px;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .team-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    color: #b8860b;
+    margin-bottom: 20px;
+  }
+
+  .team-section p {
+    color: #555;
+    font-size: 1.05rem;
+    max-width: 750px;
+    margin: 0 auto 40px;
+  }
+
+  .team-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+
+  .team-card {
+    background: #fff;
+    border-radius: 15px;
+    width: 250px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.4s ease;
+  }
+
+  .team-card:hover {
+    transform: translateY(-10px);
+  }
+
+  .team-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+  }
+
+  .team-info {
+    padding: 20px;
+  }
+
+  .team-info h5 {
+    font-size: 1.2rem;
+    color: #b8860b;
+    margin-bottom: 8px;
+  }
+
+  .team-info p {
+    font-size: 0.95rem;
+    color: #555;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .about-section h2 { font-size: 2rem; }
+    .highlight-card, .team-card { width: 90%; }
+  }
+</style>
+
+<div class="container my-5">
+  <div class="about-section">
+    <h2>About Sparkle Jewellery</h2>
+    <p>
+      Welcome to <strong>Sparkle Jewellery</strong> — where elegance meets artistry.
+      We specialize in handcrafted gold, silver, and diamond jewellery designed to
+      bring sparkle to every occasion. Each piece tells a story of beauty, tradition, and timeless craftsmanship.
+    </p>
+
+    <!-- Image with animated sparkles -->
+    <div class="about-image-container">
+      <img src="{% static 'images/aboutjwellery.jpeg' %}" class="about-image" alt="About Sparkle Jewellery">
+      <!-- Sparkle elements -->
+      <div class="sparkle" style="top:20%; left:30%; animation-delay:0s;"></div>
+      <div class="sparkle" style="top:50%; left:70%; animation-delay:0.5s;"></div>
+      <div class="sparkle" style="top:40%; left:50%; animation-delay:1s;"></div>
+      <div class="sparkle" style="top:65%; left:20%; animation-delay:1.3s;"></div>
+      <div class="sparkle" style="top:25%; left:80%; animation-delay:1.6s;"></div>
+    </div>
+
+    <!-- Highlights Section -->
+    <div class="highlights mt-5">
+      <div class="highlight-card">
+        <i class="fa-solid fa-gem"></i>
+        <h5>Premium Quality</h5>
+        <p>Our jewels are crafted with the finest materials and unmatched attention to detail.</p>
+      </div>
+      <div class="highlight-card">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        <h5>Handcrafted Designs</h5>
+        <p>Every piece is handmade with passion, blending tradition and modern trends.</p>
+      </div>
+      <div class="highlight-card">
+        <i class="fa-solid fa-crown"></i>
+        <h5>Trusted Since 1990</h5>
+        <p>With decades of experience, we’ve earned the trust of thousands of happy customers.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meet Our Artisans Section -->
+  <div class="team-section">
+    <h3>Meet Our Artisans</h3>
+    <p>
+      Behind every piece of jewellery lies the creativity and dedication of our talented artisans.
+      Their mastery transforms raw materials into timeless treasures.
+    </p>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <img src="{% static 'images/jpro1.jpeg' %}" alt="Artisan 1">
+        <div class="team-info">
+          <h5>Ananya Sharma</h5>
+          <p>Goldsmith | 15 Years Experience</p>
+        </div>
+      </div>
+      <div class="team-card">
+        <img src="{% static 'images/jpro3.jpeg' %}" alt="Artisan 2">
+        <div class="team-info">
+          <h5>Ravi Kumar</h5>
+          <p>Diamond Setter | Perfection in Every Sparkle</p>
+        </div>
+      </div>
+      <div class="team-card">
+        <img src="{% static 'images/jpro2.jpeg' %}" alt="Artisan 3">
+        <div class="team-info">
+          <h5>Meera Patel</h5>
+          <p>Designer | Blending Tradition & Modern Grace</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

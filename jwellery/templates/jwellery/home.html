@@ -1,0 +1,131 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  /* Elegant Hero Section */
+  .hero-section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 90vh;
+    object-fit: cover;
+    filter: brightness(70%);
+    animation: fadeIn 1.5s ease-in-out;
+  }
+
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff8e1;
+    animation: fadeUp 1.5s ease-in-out;
+  }
+
+  .hero-content h1 {
+    font-family: "Playfair Display", serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    color: #f7d67c;
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+    margin-top: 15px;
+    color: #fff8dc;
+  }
+
+  .btn-shop-now {
+    margin-top: 25px;
+    background: linear-gradient(135deg, #d4af37, #b88a1e);
+    border: none;
+    padding: 12px 35px;
+    color: white;
+    font-weight: 600;
+    border-radius: 50px;
+    letter-spacing: 0.8px;
+    transition: 0.4s;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-shop-now:hover {
+    background: linear-gradient(135deg, #f1c84c, #d4af37);
+    transform: scale(1.08);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.9);
+  }
+
+  /* Sparkle animation */
+  .sparkle {
+    position: absolute;
+    background: radial-gradient(circle, #f9e39b 0%, transparent 60%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: sparkleMove 6s linear infinite;
+  }
+
+  @keyframes sparkleMove {
+    0% {
+      transform: translateY(100%) scale(0.5);
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(50%) scale(1);
+    }
+    100% {
+      transform: translateY(-100%) scale(0.5);
+      opacity: 0;
+    }
+  }
+
+  /* About Section */
+  .intro-section {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fffaf3;
+    color: #5a4b00;
+    animation: fadeIn 2s ease-in-out;
+  }
+
+  .intro-section h2 {
+    font-family: "Playfair Display", serif;
+    font-weight: 700;
+    color: #d4af37;
+  }
+
+  .intro-section p {
+    max-width: 700px;
+    margin: 15px auto;
+    font-size: 1.1rem;
+  }
+
+  @keyframes fadeUp {
+    from {opacity: 0; transform: translate(-50%, -40%);}
+    to {opacity: 1; transform: translate(-50%, -50%);}
+  }
+
+  @keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+</style>
+
+
+<!-- About Section -->
+<div class="intro-section">
+  <h2>Our Jewellery</h2>
+  <p>
+    At <strong>JewelAura</strong>, we craft pieces that radiate luxury and elegance.
+    Every diamond, pearl, and gem is handpicked to bring you timeless beauty that tells your story.
+    From royal bridal collections to everyday sparkle — we make every moment shine brighter.
+  </p>
+</div>
+{% endblock %}

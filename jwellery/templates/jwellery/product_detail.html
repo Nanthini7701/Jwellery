@@ -1,0 +1,257 @@
+{% extends 'jwellery/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(to bottom right, #fffaf0, #fef6e4);
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .product-section {
+    margin-top: 60px;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+
+  .product-image {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+
+  .product-image img {
+    width: 100%;
+    border-radius: 15px;
+    transition: transform 0.6s ease;
+  }
+
+  .product-image:hover img {
+    transform: scale(1.08);
+  }
+
+  .product-info {
+    padding: 20px 25px;
+  }
+
+  .product-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    color: #b88a1e;
+  }
+
+  .product-info p.description {
+    color: #5c4a1c;
+    font-size: 1.05rem;
+    margin-top: 10px;
+  }
+
+  .product-price {
+    color: #c09523;
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin-top: 15px;
+  }
+
+  .badge {
+    font-size: 0.9rem;
+    border-radius: 50px;
+    padding: 8px 14px;
+  }
+
+  .btn-gold {
+    background: linear-gradient(135deg, #d4af37, #b88a1e);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+  }
+
+  .btn-gold:hover {
+    background: linear-gradient(135deg, #b88a1e, #a67c00);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+  }
+
+  .btn-outline-gold {
+    border: 2px solid #d4af37;
+    color: #b88a1e;
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 10px 25px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-gold:hover {
+    background: #d4af37;
+    color: white;
+    transform: scale(1.05);
+  }
+
+  /* Shimmer animation */
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { left: -75%; }
+    100% { left: 125%; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Recommended Section */
+  .recommended-section {
+    margin-top: 80px;
+  }
+
+  .recommended-section h3 {
+    font-family: 'Playfair Display', serif;
+    color: #b88a1e;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .recommended-card {
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .recommended-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+  }
+
+  .recommended-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .recommended-card:hover img {
+    transform: scale(1.07);
+  }
+
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    filter: invert(1) sepia(1) saturate(10) hue-rotate(10deg);
+  }
+
+</style>
+
+<div class="container product-section">
+  <div class="row align-items-center gy-4">
+    <!-- Product Image -->
+    <div class="col-md-6">
+      <div class="product-image shimmer">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.title }}">
+        {% else %}
+          <img src="{% static 'jwellery/g2.jpeg' %}" alt="No Image">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+      <div class="product-info">
+        <h2>{{ product.title }}</h2>
+        <p class="text-muted">{{ product.category.name }}</p>
+        <p class="description">{{ product.description }}</p>
+
+        <div class="product-price">₹{{ product.price }}</div>
+
+        <div class="mt-3">
+          {% if product.stock > 0 %}
+            <span class="badge bg-success">In Stock</span>
+          {% else %}
+            <span class="badge bg-danger">Out of Stock</span>
+          {% endif %}
+        </div>
+
+      <div class="d-flex gap-3 mt-4">
+  {% if product and product.id %}
+    <a href="{% url 'jwellery:cart_add' product.id %}" class="btn btn-gold">
+      <i class="bi bi-bag-heart me-2"></i> Add to Cart
+    </a>
+  {% else %}
+    <!-- disabled fallback to avoid NoReverseMatch -->
+    <button class="btn btn-gold" disabled>
+      <i class="bi bi-bag-heart me-2"></i> Add to Cart
+    </button>
+  {% endif %}
+
+  <a href="{% url 'jwellery:checkout' %}" class="btn btn-outline-gold">
+    <i class="bi bi-cash-stack me-2"></i> Checkout
+  </a>
+</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recommended Jewellery Section -->
+<div class="container recommended-section">
+  <h3>✨ You May Also Like ✨</h3>
+  <div id="recommendedCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+
+      {% for rec in recommended_products %}
+      <div class="carousel-item {% if forloop.first %}active{% endif %}">
+        <div class="row justify-content-center">
+          <div class="col-md-4">
+            <div class="recommended-card">
+              {% if rec.image %}
+                <img src="{{ rec.image.url }}" alt="{{ rec.title }}">
+              {% else %}
+                <img src="{% static 'jwellery/g1.jpeg' %}" alt="No Image">
+              {% endif %}
+              <div class="p-3 text-center">
+                <h5 class="text-gold">{{ rec.title }}</h5>
+                <p class="fw-bold text-muted">₹{{ rec.price }}</p>
+                <a href="{% url 'jwellery:product_detail' rec.id %}" class="btn btn-outline-gold btn-sm">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#recommendedCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#recommendedCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+{% endblock %}
