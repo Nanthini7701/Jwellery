@@ -2,3 +2,6 @@ google.generativeai
 pymupdf
 gunicorn
 django
+django-jazzmin
+
+
