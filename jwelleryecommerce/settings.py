@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-gx*x#b3*)92o!s+b4h$4mnr@66vpu)zvr-^9tv=7(fwd-0b0xj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1','nanthinip.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost','127.0.0.1','nanthinip.pythonanywhere.com','*']
 
 
 RAZORPAY_KEY_ID = 'rzp_test_RTNKAFRBNnZAhH'
