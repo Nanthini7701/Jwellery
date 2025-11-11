@@ -3,5 +3,8 @@ pymupdf
 gunicorn
 django
 django-jazzmin
+django-widget-tweaks
+pillow
+
 
 
